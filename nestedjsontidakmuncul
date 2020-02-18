@@ -1,0 +1,196 @@
+package com.example.sptraus.ui.home.product;
+
+
+
+import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.os.Bundle;
+
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.sptrading.R;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class awalproduct extends AppCompatActivity {
+    private ArrayList<SubItemAwal> mExampleList;
+    private RequestQueue mRequestQueue,mRequestJenis;
+
+
+    ProgressDialog progress;
+
+    List<SubItemAwal> subItemList = new ArrayList<>();
+    List<ItemAwal> itemList = new ArrayList<>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.hawalproduct);
+
+        progress = new ProgressDialog(this);
+        progress.setCancelable(false);
+        progress.setMessage("Loading ...");
+        progress.setCancelable(true);
+        showDialog();
+        mRequestJenis = Volley.newRequestQueue(this);
+
+        RecyclerView rvItem = findViewById(R.id.rv_item);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(awalproduct.this);
+        Adapterawal itemAdapter = new Adapterawal(buildItemList());
+        rvItem.setAdapter(itemAdapter);
+        rvItem.setLayoutManager(layoutManager);
+
+
+
+    }
+
+
+    private List<ItemAwal> buildItemList() {
+        mExampleList = new ArrayList<>();
+        mRequestQueue = Volley.newRequestQueue(this);
+
+        String url = "http://126.234.xxx.xxx/android/jenisproduct.php";
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+
+
+
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+
+                        try {
+                            hideDialog();
+                            JSONArray jsonArray = response.getJSONArray("result");
+
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject hit = jsonArray.getJSONObject(i);
+
+
+                                String jenis = hit.getString("jenis");
+
+
+                                ItemAwal item = new ItemAwal(jenis, buildSubItemList());
+                                itemList.add(item);
+                    showDialog();
+
+
+
+
+
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+
+        mRequestJenis.add(request);
+
+
+
+
+
+
+
+
+
+        return itemList;
+
+
+    }
+
+    private List<SubItemAwal> buildSubItemList() {
+
+
+        String url = "http://126.234.xxx.xxx/android/getdata.php";
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+
+
+
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+
+                        try {
+                            hideDialog();
+                            JSONArray jsonArray = response.getJSONArray("result");
+
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject hit = jsonArray.getJSONObject(i);
+
+                                String creatorName = hit.getString("namagambar");
+                                String jenis = hit.getString("jenis");
+
+
+                                //mExampleList.add(new ExampleItem(imageUrl, imageUrl2, creatorName,jenis));
+                                SubItemAwal subItem = new SubItemAwal(creatorName, jenis);
+                                subItemList.add(subItem);
+
+
+
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+
+        mRequestQueue.add(request);
+
+
+        return subItemList;
+
+
+
+
+    }
+
+    private void showDialog() {
+        if (!progress.isShowing())
+            progress.show();
+    }
+
+    private void hideDialog() {
+        if (progress.isShowing())
+            progress.dismiss();
+    }
+
+
+
+}
