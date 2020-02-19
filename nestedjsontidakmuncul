@@ -52,72 +52,65 @@ public class nestproduct extends AppCompatActivity {
         my_recycler_view.setAdapter(adapter);
 
 
-       createDummyData();
+        createDummyData();
 
     }
 
 
     //http://xx.2xx.1xx.xx/android/jenisproduct.php
 
-        public void createDummyData() {
+    public void createDummyData() {
 
-            String url = "http://xx.2xx.1xx.xx/android/jenisproduct.php";
+        String url = "http://xx.2xx.1xx.xx/android/jenisproduct.php
 
-            JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                    new Response.Listener<JSONObject>() {
-
-
-                        @Override
-                        public void onResponse(JSONObject response) {
-
-                            try {
-
-                                JSONArray jsonArray = response.getJSONArray("result");
-
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    JSONObject hit = jsonArray.getJSONObject(i);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
 
 
-                                    String jenis = hit.getString("jenis");
-                                    SectionDataModel dm = new SectionDataModel();
+                    @Override
+                    public void onResponse(JSONObject response) {
 
-                                    dm.setHeaderTitle(jenis);
+                        try {
 
+                            JSONArray jsonArray = response.getJSONArray("result");
 
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject hit = jsonArray.getJSONObject(i);
 
-                                    ArrayList<SingleItemModel> singleItem = new ArrayList<SingleItemModel>();
-                                   JSONArray jssonrow = hit.getJSONArray("ITEMS");
+                                SectionDataModel dm = new SectionDataModel();
 
-                                    for (int j = 0; j <= jssonrow.length(); j++) {
-                                        JSONObject jssonitem = jssonrow.getJSONObject(j);
+                                dm.setHeaderTitle(hit.getString("jenis"));
 
-                                        String id = jssonitem.getString("id");
+                                Log.i("array6", String.valueOf(dm));
 
-                                        String nmgambar = jssonitem.getString("namagambar");
-                                        singleItem.add(new SingleItemModel(id, nmgambar));
-                                    }
-
-                                    dm.setAllItemsInSection(singleItem);
-
-                                    allSampleData.add(dm);
-
-
+                                JSONArray jssonrow = hit.getJSONArray("ITEMS");
+                                ArrayList<SingleItemModel> singleItem = new ArrayList<SingleItemModel>();
+                                for (int j = 0; j < jssonrow.length(); j++) {
+                                    JSONObject jssonitem = jssonrow.getJSONObject(j);
+                                    singleItem.add(new SingleItemModel(jssonitem.getString("iddalam"), jssonitem.getString("namagambar")));
+                                    Log.i("array7", String.valueOf(singleItem));
                                 }
+                                dm.setAllItemsInSection(singleItem);
+                                Log.d(String.valueOf(dm),"array"+ allSampleData.size());
+                                allSampleData.add(dm);
 
 
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
                             }
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    error.printStackTrace();
-                }
-            });
 
-            mRequestQueue.add(request);
-        }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+
+        mRequestQueue.add(request);
+    }
 
 }
