@@ -57,11 +57,11 @@ public class nestproduct extends AppCompatActivity {
     }
 
 
-    //http://1xx6.2xx.xxx1x.xx/android/jenisproduct.php
+    //http://116.254.116.48/android/jenisproduct.php
 
         public void createDummyData() {
 
-            String url = "http://1xx6.2xx.xxx1x.xx/android/jenisproduct.php";
+            String url = "http://116.254.116.48/android/jenisproduct.php";
 
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                     new Response.Listener<JSONObject>() {
@@ -91,9 +91,9 @@ public class nestproduct extends AppCompatActivity {
                                     for (int j = 0; j <= jssonrow.length(); j++) {
                                         JSONObject jssonitem = jssonrow.getJSONObject(j);
 
-                                        String id = hit.getString("id");
+                                        String id = jssonitem.getString("id");
 
-                                        String nmgambar = hit.getString("namagambar");
+                                        String nmgambar = jssonitem.getString("namagambar");
                                         singleItem.add(new SingleItemModel(id, nmgambar));
                                     }
 
