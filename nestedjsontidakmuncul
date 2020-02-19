@@ -1,13 +1,10 @@
-package com.example.sptraus.ui.home.product;
+package com.example.sptrading.ui.home.product.cobanest;
 
-
-
-import android.app.ProgressDialog;
-import android.content.ClipData;
 import android.os.Bundle;
-
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,173 +21,103 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class awalproduct extends AppCompatActivity {
-    private ArrayList<SubItemAwal> mExampleList;
-    private RequestQueue mRequestQueue,mRequestJenis;
+public class nestproduct extends AppCompatActivity {
 
+    private Toolbar toolbar;
+    private RequestQueue mRequestQueue;
+    String jsonResponse;
+    ArrayList<SectionDataModel> allSampleData;
 
-    ProgressDialog progress;
-
-    List<SubItemAwal> subItemList = new ArrayList<>();
-    List<ItemAwal> itemList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.hawalproduct);
+        setContentView(R.layout.hnestproduct);
 
-        progress = new ProgressDialog(this);
-        progress.setCancelable(false);
-        progress.setMessage("Loading ...");
-        progress.setCancelable(true);
-        showDialog();
-        mRequestJenis = Volley.newRequestQueue(this);
-
-        RecyclerView rvItem = findViewById(R.id.rv_item);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(awalproduct.this);
-        Adapterawal itemAdapter = new Adapterawal(buildItemList());
-        rvItem.setAdapter(itemAdapter);
-        rvItem.setLayoutManager(layoutManager);
-
-
-
-    }
-
-
-    private List<ItemAwal> buildItemList() {
-        mExampleList = new ArrayList<>();
+        allSampleData = new ArrayList<>();
         mRequestQueue = Volley.newRequestQueue(this);
 
-        String url = "http://126.234.xxx.xxx/android/jenisproduct.php";
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
 
 
 
+        RecyclerView my_recycler_view = (RecyclerView) findViewById(R.id.my_recycler_view);
 
-                    @Override
-                    public void onResponse(JSONObject response) {
+        my_recycler_view.setHasFixedSize(true);
 
+        RecyclerViewDataAdapter adapter = new RecyclerViewDataAdapter(this, allSampleData);
 
-                        try {
-                            hideDialog();
-                            JSONArray jsonArray = response.getJSONArray("result");
+        my_recycler_view.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
-
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject hit = jsonArray.getJSONObject(i);
+        my_recycler_view.setAdapter(adapter);
 
 
-                                String jenis = hit.getString("jenis");
+       createDummyData();
+
+    }
 
 
-                                ItemAwal item = new ItemAwal(jenis, buildSubItemList());
-                                itemList.add(item);
-                    showDialog();
+    //http://1xx6.2xx.xxx1x.xx/android/jenisproduct.php
+
+        public void createDummyData() {
+
+            String url = "http://1xx6.2xx.xxx1x.xx/android/jenisproduct.php";
+
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                    new Response.Listener<JSONObject>() {
+
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+
+                            try {
+
+                                JSONArray jsonArray = response.getJSONArray("result");
+
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    JSONObject hit = jsonArray.getJSONObject(i);
+
+
+                                    String jenis = hit.getString("jenis");
+                                    SectionDataModel dm = new SectionDataModel();
+
+                                    dm.setHeaderTitle(jenis);
 
 
 
+                                    ArrayList<SingleItemModel> singleItem = new ArrayList<SingleItemModel>();
+                                   JSONArray jssonrow = hit.getJSONArray("ITEMS");
+
+                                    for (int j = 0; j <= jssonrow.length(); j++) {
+                                        JSONObject jssonitem = jssonrow.getJSONObject(j);
+
+                                        String id = hit.getString("id");
+
+                                        String nmgambar = hit.getString("namagambar");
+                                        singleItem.add(new SingleItemModel(id, nmgambar));
+                                    }
+
+                                    dm.setAllItemsInSection(singleItem);
+
+                                    allSampleData.add(dm);
 
 
+                                }
+
+
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
                         }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        });
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    error.printStackTrace();
+                }
+            });
 
-        mRequestJenis.add(request);
-
-
-
-
-
-
-
-
-
-        return itemList;
-
-
-    }
-
-    private List<SubItemAwal> buildSubItemList() {
-
-
-        String url = "http://126.234.xxx.xxx/android/getdata.php";
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-
-
-
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-
-                        try {
-                            hideDialog();
-                            JSONArray jsonArray = response.getJSONArray("result");
-
-
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject hit = jsonArray.getJSONObject(i);
-
-                                String creatorName = hit.getString("namagambar");
-                                String jenis = hit.getString("jenis");
-
-
-                                //mExampleList.add(new ExampleItem(imageUrl, imageUrl2, creatorName,jenis));
-                                SubItemAwal subItem = new SubItemAwal(creatorName, jenis);
-                                subItemList.add(subItem);
-
-
-
-                            }
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        });
-
-        mRequestQueue.add(request);
-
-
-        return subItemList;
-
-
-
-
-    }
-
-    private void showDialog() {
-        if (!progress.isShowing())
-            progress.show();
-    }
-
-    private void hideDialog() {
-        if (progress.isShowing())
-            progress.dismiss();
-    }
-
-
+            mRequestQueue.add(request);
+        }
 
 }
