@@ -57,11 +57,11 @@ public class nestproduct extends AppCompatActivity {
     }
 
 
-    //http://116.254.116.48/android/jenisproduct.php
+    //http://xx.2xx.1xx.xx/android/jenisproduct.php
 
         public void createDummyData() {
 
-            String url = "http://116.254.116.48/android/jenisproduct.php";
+            String url = "http://xx.2xx.1xx.xx/android/jenisproduct.php";
 
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                     new Response.Listener<JSONObject>() {
